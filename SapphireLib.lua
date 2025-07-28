@@ -2939,6 +2939,7 @@ function SapphireLib.getInfo()
     }
 end
 
+
 -- Exportar módulos para acesso externo
 SapphireLib.Themes = Themes
 SapphireLib.Utils = Utils
@@ -2953,9 +2954,10 @@ SapphireLib.SaveSystem = SaveSystem
 SapphireLib.Translation = Translation
 SapphireLib.Components = Components
 SapphireLib.Events = Events
+
+-- Funções públicas principais
 SapphireLib.CreateWindow = WindowCreator.createWindow
 SapphireLib.CreateExampleFrame = ExampleFrames.createExampleFrame
 SapphireLib.CreateExampleShowcase = ExampleFrames.createExampleShowcase
 
 return SapphireLib
-
