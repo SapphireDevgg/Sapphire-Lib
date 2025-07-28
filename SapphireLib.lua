@@ -861,7 +861,7 @@ Position = UDim2.new(0, 10, 0, 10),
 BackgroundTransparency = 1,
 Image = "rbxassetid://5554339900", -- ID de imagem de exemplo, substitua pela sua
 ScaleType = Enum.ScaleType.Fit,
-Parent = game:GetService("Players").LocalPlayer.PlayerGui, -- Garante que o botão seja visível
+Parent = h.UIElements.FullScreen or MainScreenGui, -- Tenta adicionar ao FullScreen ou a uma ScreenGui global
 })
 
 local ButtonBorder = d("Frame",{
