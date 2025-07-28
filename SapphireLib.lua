@@ -2954,6 +2954,8 @@ SapphireLib.Translation = Translation
 SapphireLib.Components = Components
 SapphireLib.Events = Events
 SapphireLib.CreateWindow = WindowCreator.createWindow
+SapphireLib.CreateExampleFrame = ExampleFrames.createExampleFrame
+SapphireLib.CreateExampleShowcase = ExampleFrames.createExampleShowcase
 
 return SapphireLib
 
