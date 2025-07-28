@@ -1229,3 +1229,6 @@ toggleButton.MouseButton1Click:Connect(function()
         core.Enabled = not core.Enabled
     end
 end)
+
+
+return SapphireLib
