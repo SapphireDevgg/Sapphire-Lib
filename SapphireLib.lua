@@ -759,6 +759,10 @@ Window=nil,
 Parent=nil,
 }
 
+-- Adicionando variáveis para o estado da UI e a cor dinâmica
+local isUIOpen = false
+local hue = 0
+
 function f.Init(g,h)
 f.Window=g
 f.Parent=h
@@ -848,6 +852,56 @@ NumberSequenceKeypoint.new(1,0.6)
 })
 })
 })
+
+-- Adicionando o botão de toggle da UI
+local ToggleButton = d("ImageButton",{
+Name = "ToggleButton",
+Size = UDim2.new(0, 50, 0, 50),
+Position = UDim2.new(0, 10, 0, 10),
+BackgroundTransparency = 1,
+Image = "rbxassetid://5554339900", -- ID de imagem de exemplo, substitua pela sua
+ScaleType = Enum.ScaleType.Fit,
+Parent = h.UIElements.FullScreen or MainScreenGui, -- Tenta adicionar ao FullScreen ou a uma ScreenGui global
+})
+
+local ButtonBorder = d("Frame",{
+Name = "ButtonBorder",
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundTransparency = 0,
+BackgroundColor3 = Color3.new(1, 0, 0),
+BorderSizePixel = 2,
+BorderColor3 = Color3.new(1, 0, 0),
+ZIndex = ToggleButton.ZIndex - 1,
+Parent = ToggleButton,
+})
+
+d("UICorner",{CornerRadius = UDim.new(0, 5)}):SetAttribute("Parent", ToggleButton)
+d("UICorner",{CornerRadius = UDim.new(0, 5)}):SetAttribute("Parent", ButtonBorder)
+
+-- Lógica para cores dinâmicas da borda do botão
+local RunService = game:GetService("RunService")
+RunService.Heartbeat:Connect(function(deltaTime)
+    hue = hue + deltaTime * 0.1 -- Ajuste a velocidade da mudança de cor aqui
+    if hue > 1 then
+        hue = hue - 1
+    end
+    local newColor = Color3.fromHSV(hue, 1, 1)
+    ButtonBorder.BackgroundColor3 = newColor
+    ButtonBorder.BorderColor3 = newColor
+end)
+
+-- Lógica para abrir e fechar a UI
+ToggleButton.MouseButton1Click:Connect(function()
+    isUIOpen = not isUIOpen
+    if isUIOpen then
+        h.UIElements.FullScreen.Visible = true
+        e(h.UIElements.FullScreen, 0.3, {BackgroundTransparency = 0}):Play()
+    else
+        e(h.UIElements.FullScreen, 0.3, {BackgroundTransparency = 1}):Play()
+        task.wait(0.3)
+        h.UIElements.FullScreen.Visible = false
+    end
+end)
 
 function h.Open(i)
 if not g then
