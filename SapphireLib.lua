@@ -859,7 +859,7 @@ Name = "ToggleButton",
 Size = UDim2.new(0, 50, 0, 50),
 Position = UDim2.new(0, 10, 0, 10),
 BackgroundTransparency = 1,
-Image = "rbxassetid://103313795004373", -- ID de imagem do Roblox fornecido pelo usuário
+Image = "rbxassetid://5554339900", -- ID de imagem de exemplo, substitua pela sua
 ScaleType = Enum.ScaleType.Fit,
 Parent = game:GetService("Players").LocalPlayer.PlayerGui, -- Garante que o botão seja visível
 })
@@ -878,24 +878,84 @@ Parent = ToggleButton,
 d("UICorner",{CornerRadius = UDim.new(0, 5)}):SetAttribute("Parent", ToggleButton)
 d("UICorner",{CornerRadius = UDim.new(0, 5)}):SetAttribute("Parent", ButtonBorder)
 
--- Adicionando um gradiente à borda do botão para se assemelhar ao estilo da imagem
-local Gradient = d("UIGradient", {
-    Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromHex("#00FFFF")), ColorSequenceKeypoint.new(1, Color3.fromHex("#FF00FF"))}),
-    Rotation = 90,
-    Parent = ButtonBorder,
-})
-
--- Lógica para cores dinâmicas da borda do botão (agora animando o gradiente)
+-- Lógica para cores dinâmicas da borda do botão
 local RunService = game:GetService("RunService")
 RunService.Heartbeat:Connect(function(deltaTime)
     hue = hue + deltaTime * 0.1 -- Ajuste a velocidade da mudança de cor aqui
     if hue > 1 then
         hue = hue - 1
     end
-    local color1 = Color3.fromHSV(hue, 1, 1)
-    local color2 = Color3.fromHSV((hue + 0.1) % 1, 1, 1)
-    Gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, color1), ColorSequenceKeypoint.new(1, color2)})
-end) end function a.f()
+    local newColor = Color3.fromHSV(hue, 1, 1)
+    ButtonBorder.BackgroundColor3 = newColor
+    ButtonBorder.BorderColor3 = newColor
+end)
+
+-- Lógica para abrir e fechar a UI
+ToggleButton.MouseButton1Click:Connect(function()
+    isUIOpen = not isUIOpen
+    if isUIOpen then
+        h.UIElements.FullScreen.Visible = true
+        e(h.UIElements.FullScreen, 0.3, {BackgroundTransparency = 0}):Play()
+    else
+        e(h.UIElements.FullScreen, 0.3, {BackgroundTransparency = 1}):Play()
+        task.wait(0.3)
+        h.UIElements.FullScreen.Visible = false
+    end
+end)
+
+function h.Open(i)
+if not g then
+h.UIElements.FullScreen.Visible=true
+h.UIElements.FullScreen.Active=true
+end
+
+task.spawn(function()
+h.UIElements.MainContainer.Visible=true
+
+if not g then
+e(h.UIElements.FullScreen,0.1,{BackgroundTransparency=.3}):Play()
+end
+e(h.UIElements.MainContainer,0.1,{ImageTransparency=0}):Play()
+
+
+task.spawn(function()
+task.wait(0.05)
+h.UIElements.Main.Visible=true
+end)
+end)
+end
+function h.Close(i)
+if not g then
+e(h.UIElements.FullScreen,0.1,{BackgroundTransparency=1}):Play()
+h.UIElements.FullScreen.Active=false
+task.spawn(function()
+task.wait(.1)
+h.UIElements.FullScreen.Visible=false
+end)
+end
+h.UIElements.Main.Visible=false
+
+e(h.UIElements.MainContainer,0.1,{ImageTransparency=1}):Play()
+
+
+
+task.spawn(function()
+task.wait(.1)
+if not g then
+h.UIElements.FullScreen:Destroy()
+else
+h.UIElements.MainContainer:Destroy()
+end
+end)
+
+return function()end
+end
+
+
+return h
+end
+
+return f end function a.f()
 local b={}
 
 
@@ -7755,82 +7815,3 @@ return r
 end
 
 return aa
-
-
--- NOVO BLOCO DE CÓDIGO PARA O BOTÃO DE TOGGLE E UI
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-
--- Variáveis para o estado da UI e a cor dinâmica
-local isUIOpen = false
-local hue = 0
-
--- Cria a ScreenGui para o botão de toggle (se não existir uma global)
-local ToggleScreenGui = Instance.new("ScreenGui")
-ToggleScreenGui.Name = "ToggleScreenGui"
-ToggleScreenGui.Parent = PlayerGui
-
--- Cria o Frame principal da UI (fundo preto) - Apenas para demonstração, se a UI principal já existe, use-a.
--- Se a UI principal da SapphireLib for 'h.UIElements.FullScreen', você precisará referenciá-la aqui.
-local MainUIFrame = Instance.new("Frame")
-MainUIFrame.Name = "MyMainUIFrame"
-MainUIFrame.Size = UDim2.new(0.5, 0, 0.5, 0) -- Tamanho da UI
-MainUIFrame.Position = UDim2.new(0.25, 0, 0.25, 0) -- Posição centralizada
-MainUIFrame.BackgroundColor3 = Color3.new(0, 0, 0) -- Fundo preto
-MainUIFrame.BorderSizePixel = 0
-MainUIFrame.Visible = false -- Começa invisível
-MainUIFrame.Parent = ToggleScreenGui -- Ou o pai apropriado da sua UI principal
-
--- Cria o botão de toggle (quadrado com imagem e borda colorida)
-local ToggleButton = Instance.new("ImageButton")
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 50, 0, 50) -- Tamanho quadrado
-ToggleButton.Position = UDim2.new(0, 10, 0, 10) -- Posição no canto superior esquerdo
-ToggleButton.BackgroundTransparency = 1 -- Fundo transparente para mostrar apenas a imagem e a borda
-ToggleButton.Image = "rbxassetid://103313795004373" -- ID de imagem do Roblox fornecido pelo usuário
-ToggleButton.ScaleType = Enum.ScaleType.Fit
-ToggleButton.Parent = ToggleScreenGui -- Anexa à ScreenGui do botão
-
--- Cria a borda colorida para o botão (Frame que envolve o botão)
-local ButtonBorder = Instance.new("Frame")
-ButtonBorder.Name = "ButtonBorder"
-ButtonBorder.Size = UDim2.new(1, 2, 1, 2) -- Um pouco maior que o botão para criar a borda
-ButtonBorder.Position = UDim2.new(0, -1, 0, -1) -- Centraliza a borda ao redor do botão
-ButtonBorder.BackgroundTransparency = 0
-ButtonBorder.BackgroundColor3 = Color3.new(1, 0, 0) -- Cor inicial da borda (será alterada)
-ButtonBorder.BorderSizePixel = 0 -- Não queremos borda padrão do Frame
-ButtonBorder.ZIndex = ToggleButton.ZIndex - 1 -- Garante que a borda fique atrás da imagem do botão
-ButtonBorder.Parent = ToggleButton -- Anexa a borda ao botão
-
--- Lógica para cores dinâmicas da borda do botão
-RunService.Heartbeat:Connect(function(deltaTime)
-    hue = hue + deltaTime * 0.1 -- Ajuste a velocidade da mudança de cor aqui
-    if hue > 1 then
-        hue = hue - 1
-    end
-    local newColor = Color3.fromHSV(hue, 1, 1)
-    ButtonBorder.BackgroundColor3 = newColor
-end)
-
--- Lógica para abrir e fechar a UI
-ToggleButton.MouseButton1Click:Connect(function()
-    isUIOpen = not isUIOpen
-    if isUIOpen then
-        MainUIFrame.Visible = true
-        -- Opcional: Adicionar um tween para suavizar a abertura
-        TweenService:Create(MainUIFrame, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-    else
-        -- Opcional: Adicionar um tween para suavizar o fechamento
-        TweenService:Create(MainUIFrame, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        task.wait(0.3) -- Espera o tween terminar antes de esconder
-        MainUIFrame.Visible = false
-    end
-end)
-
-print("Novo botão de toggle e UI de exemplo adicionados ao PlayerGui.")
-
-
