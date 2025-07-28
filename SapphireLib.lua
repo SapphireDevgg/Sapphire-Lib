@@ -6502,7 +6502,7 @@ end
 local w
 if o.User.Enabled then local
 x, y=game.Players:GetUserThumbnailAsync(
-o.User.Anonymous and 1 or game.Players.LocalPlayer.UserId,
+o.User.SapphireUser and 1 or game.Players.LocalPlayer.UserId,
 Enum.ThumbnailType.HeadShot,
 Enum.ThumbnailSize.Size420x420
 )
@@ -6578,7 +6578,7 @@ TextTruncate="AtEnd",
 TextXAlignment="Left",
 }),
 b("TextLabel",{
-Text=o.User.Anonymous and"@Sapphire User"or"@"..game.Players.LocalPlayer.Name,
+Text=o.User.SapphireUser and"@Sapphire User"or"@"..game.Players.LocalPlayer.Name,
 TextSize=15,
 TextTransparency=.6,
 ThemeTag={
