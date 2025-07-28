@@ -265,6 +265,45 @@ function Utils.deepCopy(original)
     return copy
 end
 
+-- Função para tornar um UI element arrastável
+function Utils.makeDraggable(uiElement, dragHandle)
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    dragHandle = dragHandle or uiElement -- Se nenhum handle for fornecido, o próprio elemento é o handle
+
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = uiElement.Position
+
+            -- Para garantir que o elemento fique no topo enquanto arrasta
+            uiElement.ZIndex = 10
+        end
+    end)
+
+    dragHandle.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            uiElement.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    dragHandle.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+            uiElement.ZIndex = 1 -- Retorna ao ZIndex padrão após arrastar
+        end
+    end)
+end
+
 -- ========================================
 -- MÓDULO: ANIMATIONS
 -- ========================================
@@ -1731,6 +1770,7 @@ function Components.createContentArea(parent)
     contentArea.Position = UDim2.new(0, 240, 0, 80)
     contentArea.BackgroundTransparency = 1
     contentArea.Parent = parent
+    contentArea.Visible = false -- Definir como invisível inicialmente
 
     -- Card de UI Color
     local colorCard = Components.createColorCard(contentArea)
@@ -1888,7 +1928,7 @@ function Components.createToggleSwitch(parent)
 end
 
 -- Função para criar um ToggleButton com imagem e borda colorida dinâmica
-function Components.createImageToggleButton(parent, imageId, size, position)
+function Components.createImageToggleButton(parent, imageId, size, position, targetElement)
     local toggleFrame = Instance.new("Frame")
     toggleFrame.Name = "ImageToggleButton"
     toggleFrame.Size = size or UDim2.new(0, 50, 0, 50)
@@ -1897,7 +1937,6 @@ function Components.createImageToggleButton(parent, imageId, size, position)
     toggleFrame.BorderSizePixel = 0
     toggleFrame.Parent = parent
 
-    -- Gradiente rainbow para a borda
     local borderGradient = Instance.new("UIGradient")
     borderGradient.Color = Themes.gradients.rainbow
     borderGradient.Rotation = 0
@@ -1907,7 +1946,6 @@ function Components.createImageToggleButton(parent, imageId, size, position)
     toggleCorner.CornerRadius = UDim.new(0.5, 0)
     toggleCorner.Parent = toggleFrame
 
-    -- Imagem do botão
     local imageButton = Instance.new("ImageButton")
     imageButton.Name = "ImageButton"
     imageButton.Size = UDim2.new(1, -4, 1, -4)
@@ -1924,7 +1962,22 @@ function Components.createImageToggleButton(parent, imageId, size, position)
 
     imageButton.MouseButton1Click:Connect(function()
         isOpen = not isOpen
-        print("Image Toggle Button clicado. Estado: " .. tostring(isOpen))
+        if targetElement then
+            targetElement.Visible = isOpen
+            print("Target element visibility toggled to: " .. tostring(isOpen))
+        end
+        
+        -- Animação visual do botão (ex: rotação ou escala)
+        if isOpen then
+            -- Exemplo: rotacionar o ícone do botão
+            local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(imageButton, tweenInfo, {Rotation = 90})
+            tween:Play()
+        else
+            local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(imageButton, tweenInfo, {Rotation = 0})
+            tween:Play()
+        end
     end)
 
     return toggleFrame
@@ -2599,35 +2652,7 @@ function WindowCreator.createWindow(config)
     contentArea.Parent = windowFrame
     
     -- Funcionalidade de arrastar janela
-    local dragging = false
-    local dragStart = nil
-    local startPos = nil
-    
-    titleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = windowFrame.Position
-        end
-    end)
-    
-    titleBar.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            windowFrame.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    titleBar.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
+    Utils.makeDraggable(windowFrame, titleBar)
     
     -- Eventos dos botões
     closeButton.MouseButton1Click:Connect(function()
@@ -2872,9 +2897,9 @@ function SapphireLib.showMainInterface(parent)
         mainFrame, 
         "103313795004373", 
         UDim2.new(0, 60, 0, 60), 
-        UDim2.new(1, -80, 1, -80)
+        UDim2.new(1, -80, 1, -80),
+        contentArea -- Passando contentArea como targetElement
     )
-    
     -- Animar borda do ToggleButton
     local toggleBorderGradient = imageToggle:FindFirstChildOfClass("UIGradient")
     if toggleBorderGradient then
