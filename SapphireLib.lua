@@ -2954,4 +2954,3 @@ SapphireLib.CreateExampleFrame = ExampleFrames.createExampleFrame
 SapphireLib.CreateExampleShowcase = ExampleFrames.createExampleShowcase
 
 return SapphireLib
-
