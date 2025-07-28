@@ -1,3 +1,7 @@
+-- Proteção contra execuções múltiplas
+if getgenv and getgenv().SapphireUI_Executed then return end
+if getgenv then getgenv().SapphireUI_Executed = true end
+
 --!strict
 --[[
     SapphireLib - Biblioteca UI Avançada para Lua/Luau
@@ -2954,3 +2958,4 @@ SapphireLib.CreateExampleFrame = ExampleFrames.createExampleFrame
 SapphireLib.CreateExampleShowcase = ExampleFrames.createExampleShowcase
 
 return SapphireLib
+
