@@ -2026,6 +2026,403 @@ function Events.getAppState()
 end
 
 -- ========================================
+-- MÓDULO: EXAMPLE FRAMES (MOLDUROS)
+-- ========================================
+local ExampleFrames = {}
+
+-- Função para criar uma moldura de exemplo
+function ExampleFrames.createExampleFrame(config)
+    -- Configurações padrão
+    local defaultConfig = {
+        Title = "Exemplo",
+        Number = 1,
+        Size = UDim2.fromOffset(400, 300),
+        Position = UDim2.new(0, 0, 0, 0),
+        Parent = game.Players.LocalPlayer.PlayerGui,
+        ShowBorder = true,
+        Theme = "default_colorful"
+    }
+    
+    -- Mesclar configurações
+    for key, value in pairs(config or {}) do
+        defaultConfig[key] = value
+    end
+    
+    -- Aplicar tema se especificado
+    if defaultConfig.Theme and defaultConfig.Theme ~= "default_colorful" then
+        Themes.applyTheme(defaultConfig.Theme)
+    end
+    
+    -- Frame principal da moldura
+    local exampleFrame = Instance.new("Frame")
+    exampleFrame.Name = "ExampleFrame_" .. defaultConfig.Number
+    exampleFrame.Size = defaultConfig.Size
+    exampleFrame.Position = defaultConfig.Position
+    exampleFrame.BackgroundColor3 = Themes.colors.cardBackground
+    exampleFrame.BorderSizePixel = 0
+    exampleFrame.Parent = defaultConfig.Parent
+    
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 12)
+    frameCorner.Parent = exampleFrame
+    
+    -- Borda colorida animada (se habilitada)
+    local borderConnection = nil
+    if defaultConfig.ShowBorder then
+        local borderFrame = Instance.new("Frame")
+        borderFrame.Name = "BorderFrame"
+        borderFrame.Size = UDim2.new(1, 6, 1, 6)
+        borderFrame.Position = UDim2.new(0, -3, 0, -3)
+        borderFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+        borderFrame.BorderSizePixel = 0
+        borderFrame.Parent = exampleFrame
+        
+        local borderGradient = Instance.new("UIGradient")
+        borderGradient.Color = Themes.gradients.rainbow
+        borderGradient.Rotation = defaultConfig.Number * 45 -- Offset baseado no número
+        borderGradient.Parent = borderFrame
+        
+        local borderCorner = Instance.new("UICorner")
+        borderCorner.CornerRadius = UDim.new(0, 15)
+        borderCorner.Parent = borderFrame
+        
+        -- Animar borda
+        borderConnection = Animations.animateRainbowBorder(borderGradient)
+    end
+    
+    -- Cabeçalho da moldura
+    local headerFrame = Instance.new("Frame")
+    headerFrame.Name = "Header"
+    headerFrame.Size = UDim2.new(1, 0, 0, 50)
+    headerFrame.Position = UDim2.new(0, 0, 0, 0)
+    headerFrame.BackgroundColor3 = Themes.colors.sidebarBackground
+    headerFrame.BorderSizePixel = 0
+    headerFrame.Parent = exampleFrame
+    
+    local headerCorner = Instance.new("UICorner")
+    headerCorner.CornerRadius = UDim.new(0, 12)
+    headerCorner.Parent = headerFrame
+    
+    -- Número do exemplo
+    local numberLabel = Instance.new("TextLabel")
+    numberLabel.Name = "Number"
+    numberLabel.Size = UDim2.new(0, 40, 0, 40)
+    numberLabel.Position = UDim2.new(0, 10, 0.5, -20)
+    numberLabel.BackgroundColor3 = Themes.colors.iconBlue
+    numberLabel.BorderSizePixel = 0
+    numberLabel.Text = tostring(defaultConfig.Number)
+    numberLabel.TextColor3 = Themes.colors.textPrimary
+    numberLabel.TextSize = 18
+    numberLabel.Font = Enum.Font.GothamBold
+    numberLabel.TextXAlignment = Enum.TextXAlignment.Center
+    numberLabel.TextYAlignment = Enum.TextYAlignment.Center
+    numberLabel.Parent = headerFrame
+    
+    local numberCorner = Instance.new("UICorner")
+    numberCorner.CornerRadius = UDim.new(0.5, 0)
+    numberCorner.Parent = numberLabel
+    
+    -- Título do exemplo
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "Title"
+    titleLabel.Size = UDim2.new(1, -120, 1, 0)
+    titleLabel.Position = UDim2.new(0, 60, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = defaultConfig.Title
+    titleLabel.TextColor3 = Themes.colors.textPrimary
+    titleLabel.TextSize = 16
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.TextYAlignment = Enum.TextYAlignment.Center
+    titleLabel.Parent = headerFrame
+    
+    -- Ícone de exemplo
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Name = "Icon"
+    iconLabel.Size = UDim2.new(0, 30, 0, 30)
+    iconLabel.Position = UDim2.new(1, -40, 0.5, -15)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = "📋"
+    iconLabel.TextSize = 20
+    iconLabel.Parent = headerFrame
+    
+    -- Área de conteúdo
+    local contentArea = Instance.new("Frame")
+    contentArea.Name = "ContentArea"
+    contentArea.Size = UDim2.new(1, -20, 1, -70)
+    contentArea.Position = UDim2.new(0, 10, 0, 60)
+    contentArea.BackgroundTransparency = 1
+    contentArea.Parent = exampleFrame
+    
+    -- Scroll frame para conteúdo longo
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Name = "ScrollFrame"
+    scrollFrame.Size = UDim2.new(1, 0, 1, 0)
+    scrollFrame.Position = UDim2.new(0, 0, 0, 0)
+    scrollFrame.BackgroundTransparency = 1
+    scrollFrame.BorderSizePixel = 0
+    scrollFrame.ScrollBarThickness = 6
+    scrollFrame.ScrollBarImageColor3 = Themes.colors.iconBlue
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scrollFrame.Parent = contentArea
+    
+    -- Layout automático para o conteúdo
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0, 10)
+    listLayout.Parent = scrollFrame
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 10)
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.PaddingRight = UDim.new(0, 10)
+    padding.PaddingBottom = UDim.new(0, 10)
+    padding.Parent = scrollFrame
+    
+    -- Atualizar canvas size automaticamente
+    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 20)
+    end)
+    
+    -- Retornar objeto da moldura com métodos úteis
+    local frameObject = {
+        Frame = exampleFrame,
+        ContentArea = scrollFrame,
+        Header = headerFrame,
+        
+        -- Métodos
+        SetTitle = function(title)
+            titleLabel.Text = title
+        end,
+        
+        SetNumber = function(number)
+            numberLabel.Text = tostring(number)
+        end,
+        
+        SetIcon = function(icon)
+            iconLabel.Text = icon
+        end,
+        
+        AddTextLabel = function(text, textSize, textColor)
+            local label = Instance.new("TextLabel")
+            label.Size = UDim2.new(1, 0, 0, textSize and (textSize + 10) or 30)
+            label.BackgroundTransparency = 1
+            label.Text = text
+            label.TextColor3 = textColor or Themes.colors.textPrimary
+            label.TextSize = textSize or 14
+            label.Font = Enum.Font.Gotham
+            label.TextXAlignment = Enum.TextXAlignment.Left
+            label.TextYAlignment = Enum.TextYAlignment.Top
+            label.TextWrapped = true
+            label.Parent = scrollFrame
+            return label
+        end,
+        
+        AddCodeBlock = function(code)
+            local codeFrame = Instance.new("Frame")
+            codeFrame.Size = UDim2.new(1, 0, 0, 0) -- Altura será ajustada automaticamente
+            codeFrame.BackgroundColor3 = Themes.colors.background
+            codeFrame.BorderSizePixel = 0
+            codeFrame.Parent = scrollFrame
+            
+            local codeCorner = Instance.new("UICorner")
+            codeCorner.CornerRadius = UDim.new(0, 8)
+            codeCorner.Parent = codeFrame
+            
+            local codeLabel = Instance.new("TextLabel")
+            codeLabel.Size = UDim2.new(1, -20, 1, 0)
+            codeLabel.Position = UDim2.new(0, 10, 0, 0)
+            codeLabel.BackgroundTransparency = 1
+            codeLabel.Text = code
+            codeLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+            codeLabel.TextSize = 12
+            codeLabel.Font = Enum.Font.Code
+            codeLabel.TextXAlignment = Enum.TextXAlignment.Left
+            codeLabel.TextYAlignment = Enum.TextYAlignment.Top
+            codeLabel.TextWrapped = true
+            codeLabel.Parent = codeFrame
+            
+            -- Ajustar altura do frame baseado no texto
+            local textBounds = game:GetService("TextService"):GetTextSize(
+                code, 12, Enum.Font.Code, Vector2.new(codeLabel.AbsoluteSize.X, math.huge)
+            )
+            codeFrame.Size = UDim2.new(1, 0, 0, textBounds.Y + 20)
+            
+            return codeFrame
+        end,
+        
+        AddButton = function(text, callback)
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0, 150, 0, 35)
+            button.BackgroundColor3 = Themes.colors.iconBlue
+            button.BorderSizePixel = 0
+            button.Text = text
+            button.TextColor3 = Themes.colors.textPrimary
+            button.TextSize = 14
+            button.Font = Enum.Font.GothamBold
+            button.Parent = scrollFrame
+            
+            local buttonCorner = Instance.new("UICorner")
+            buttonCorner.CornerRadius = UDim.new(0, 8)
+            buttonCorner.Parent = button
+            
+            if callback then
+                button.MouseButton1Click:Connect(callback)
+            end
+            
+            return button
+        end,
+        
+        AddSeparator = function()
+            local separator = Instance.new("Frame")
+            separator.Size = UDim2.new(1, 0, 0, 2)
+            separator.BackgroundColor3 = Themes.colors.searchBorder
+            separator.BorderSizePixel = 0
+            separator.Parent = scrollFrame
+            
+            local separatorCorner = Instance.new("UICorner")
+            separatorCorner.CornerRadius = UDim.new(0, 1)
+            separatorCorner.Parent = separator
+            
+            return separator
+        end,
+        
+        Show = function()
+            exampleFrame.Visible = true
+        end,
+        
+        Hide = function()
+            exampleFrame.Visible = false
+        end,
+        
+        Destroy = function()
+            if borderConnection then
+                borderConnection:Disconnect()
+            end
+            exampleFrame:Destroy()
+        end,
+        
+        SetTheme = function(themeName)
+            Themes.applyTheme(themeName)
+            exampleFrame.BackgroundColor3 = Themes.colors.cardBackground
+            headerFrame.BackgroundColor3 = Themes.colors.sidebarBackground
+            titleLabel.TextColor3 = Themes.colors.textPrimary
+            numberLabel.BackgroundColor3 = Themes.colors.iconBlue
+        end
+    }
+    
+    return frameObject
+end
+
+-- Função para criar uma demonstração completa com molduras
+function ExampleFrames.createExampleShowcase(parent)
+    local showcaseFrame = Instance.new("ScreenGui")
+    showcaseFrame.Name = "SapphireLibExampleShowcase"
+    showcaseFrame.ResetOnSpawn = false
+    showcaseFrame.Parent = parent or game.Players.LocalPlayer.PlayerGui
+    
+    -- Título principal
+    local mainTitle = Instance.new("TextLabel")
+    mainTitle.Size = UDim2.new(0, 600, 0, 50)
+    mainTitle.Position = UDim2.new(0.5, -300, 0, 20)
+    mainTitle.BackgroundTransparency = 1
+    mainTitle.Text = "🔷 SapphireLib - Exemplos de Uso 🔷"
+    mainTitle.TextColor3 = Themes.colors.textPrimary
+    mainTitle.TextSize = 24
+    mainTitle.Font = Enum.Font.GothamBold
+    mainTitle.TextXAlignment = Enum.TextXAlignment.Center
+    mainTitle.Parent = showcaseFrame
+    
+    -- Exemplo 1: Interface Principal
+    local example1 = ExampleFrames.createExampleFrame({
+        Title = "Interface Principal Completa",
+        Number = 1,
+        Size = UDim2.fromOffset(380, 300),
+        Position = UDim2.new(0, 50, 0, 100),
+        Parent = showcaseFrame,
+        Theme = "blue"
+    })
+    
+    example1:AddTextLabel("Cria a interface principal da SapphireLib com loading screen, key system e sidebar:", 14)
+    example1:AddCodeBlock([[local SapphireLib = require(script.SapphireLib)
+SapphireLib.new(game.Players.LocalPlayer.PlayerGui)]])
+    example1:AddButton("Executar Exemplo", function()
+        print("Executando exemplo 1...")
+    end)
+    
+    -- Exemplo 2: Janela Personalizada
+    local example2 = ExampleFrames.createExampleFrame({
+        Title = "Janela Personalizada",
+        Number = 2,
+        Size = UDim2.fromOffset(380, 350),
+        Position = UDim2.new(0.5, 20, 0, 100),
+        Parent = showcaseFrame,
+        Theme = "amethyst"
+    })
+    
+    example2:AddTextLabel("Cria uma janela personalizada com título, subtítulo e tema:", 14)
+    example2:AddCodeBlock([[local myWindow = SapphireLib.CreateWindow({
+    Title = "Minha Janela",
+    SubTitle = "Exemplo de Uso",
+    Size = UDim2.fromOffset(600, 400),
+    Acrylic = true,
+    Theme = "Blue"
+})]])
+    example2:AddSeparator()
+    example2:AddTextLabel("Adicionar elementos à janela:", 14)
+    example2:AddCodeBlock([[local label = Instance.new("TextLabel")
+label.Text = "Olá Mundo!"
+label.Parent = myWindow.ContentArea]])
+    example2:AddButton("Executar Exemplo", function()
+        print("Executando exemplo 2...")
+    end)
+    
+    -- Exemplo 3: Temas e Personalização
+    local example3 = ExampleFrames.createExampleFrame({
+        Title = "Temas e Personalização",
+        Number = 3,
+        Size = UDim2.fromOffset(380, 280),
+        Position = UDim2.new(0, 50, 0, 420),
+        Parent = showcaseFrame,
+        Theme = "rose"
+    })
+    
+    example3:AddTextLabel("Alterar temas e personalizar a interface:", 14)
+    example3:AddCodeBlock([[-- Temas disponíveis: Blue, Red, Amethyst, Rose, Green
+myWindow:SetTheme("Red")
+myWindow:SetTitle("Novo Título")
+myWindow:SetSubTitle("Novo Subtítulo")]])
+    example3:AddButton("Testar Temas", function()
+        print("Testando temas...")
+    end)
+    
+    -- Exemplo 4: Módulos Avançados
+    local example4 = ExampleFrames.createExampleFrame({
+        Title = "Módulos Avançados",
+        Number = 4,
+        Size = UDim2.fromOffset(380, 320),
+        Position = UDim2.new(0.5, 20, 0, 420),
+        Parent = showcaseFrame,
+        Theme = "green"
+    })
+    
+    example4:AddTextLabel("Usar módulos internos da SapphireLib:", 14)
+    example4:AddCodeBlock([[-- Sistema de tradução
+SapphireLib.Translation.setLanguage("en_US")
+
+-- Sapphire AI
+local response = SapphireLib.SapphireAI.sendMessage("Olá!")
+
+-- Sistema de temas
+local themes = SapphireLib.Themes.availableThemes]])
+    example4:AddButton("Testar Módulos", function()
+        print("Testando módulos avançados...")
+    end)
+    
+    return showcaseFrame
+end
+
+-- ========================================
 -- MÓDULO: WINDOW CREATOR
 -- ========================================
 local WindowCreator = {}
@@ -2528,6 +2925,8 @@ SapphireLib.Translation = Translation
 SapphireLib.Components = Components
 SapphireLib.Events = Events
 SapphireLib.CreateWindow = WindowCreator.createWindow
+SapphireLib.CreateExampleFrame = ExampleFrames.createExampleFrame
+SapphireLib.CreateExampleShowcase = ExampleFrames.createExampleShowcase
 
 return SapphireLib
 
