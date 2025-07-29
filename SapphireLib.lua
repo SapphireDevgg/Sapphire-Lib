@@ -409,14 +409,14 @@ return g end function a.b()
 return{
 Dark={
 Name="Dark",
-Accent="#18181b",
-Dialog="#18181b",
-Outline="#FFFFFF",
-Text="#FFFFFF",
-Placeholder="#999999",
-Background="#101010",
-Button="#52525b",
-Icon="#a1a1aa",
+Accent = "#ff0000",
+Dialog = "#1a1a1a",
+Outline = "#ffffff",
+Text = "#ffffff",
+Placeholder = "#ff6666",
+Background = "#0d0d0d",
+Button = "#cc0000",
+Icon = "#ff4d4d",
 Spiderman = {
   Accent = "#ff0000",
   Dialog = "#1a1a1a",
